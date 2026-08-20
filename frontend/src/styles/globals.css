@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+html { scroll-behavior: smooth; }
+
+html.dark body { background: #0b1016; color: #c8c8c8; }
+html.dark main.bg-white,
+html.dark main { background-color: #0b1016 !important; }
+html.dark main .bg-white { background-color: #121920 !important; }
+html.dark main [class*="text-[#111]"],
+html.dark main [class*="text-[#101b2d]"] { color: #d4d4d4 !important; }
+html.dark main [class*="border-[#ddd]"],
+html.dark main [class*="border-[#e3e3e3]"],
+html.dark main [class*="border-[#e9e9e9]"] { border-color: #30363d !important; }
+html.dark main .atelier-title { color: #e2e2e2; }
+html.dark main [class*="bg-[#f5f5f5]"] { background-color: #d8d8d8 !important; }
+html.dark .header-search { background: #050505 !important; border-color: #343434 !important; color: #aaa !important; }
+html.dark .header-search input { color: #aaa !important; }
+html.dark .header-search input::placeholder { color: #777 !important; }
+html.dark .header-search-button { background: #343434 !important; }
+.header-search,
+.header-search input,
+.header-search-button,
+.header-search-button:hover,
+.header-search-button:focus,
+.header-search-button:focus-visible,
+.header-search-button:active {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+html.dark .category-trigger { background: transparent !important; }
+html.dark main .product-social-bar { background: #171d24 !important; color: #c7c7c7 !important; }
+html.dark main .product-social-bar > span { border-color: #303740 !important; }
+html.dark .footer-policy-row { background: #0b1016 !important; border-color: #29313a !important; color: #aeb4ba !important; }
+html.dark .footer-policy-row a { color: #aeb4ba !important; }
+html.dark .footer-main { background: #151b22 !important; }
+html.dark .hero-divider { background-color: #30363d !important; }
+html.dark main .section-control { background: #10161d !important; border-color: #38414b !important; color: #a7adb3 !important; }
+html.dark .top-utility-bar { background: #4b4b4d !important; color: #d0d0d0 !important; }
+html.dark .category-nav-bar {
+  background: #1d293d !important;
+  border-bottom: 2px solid #0a1016 !important;
+  isolation: isolate;
+}
+html.dark .category-nav-bar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: #1d293d;
+}
+html.dark .category-nav-bar a { color: #aeb1b5 !important; }
+html.dark .category-nav-bar a:hover,
+html.dark .category-nav-bar a:focus-visible,
+html.dark .category-nav-bar a[data-active] {
+  color: #fff !important;
+  background: #505052 !important;
+}
+html.dark .category-nav-bar .category-trigger { color: #fff !important; background: transparent !important; }
+html.dark .category-nav-bar .category-trigger:hover,
+html.dark .category-nav-bar .category-trigger:focus-visible,
+html.dark .category-nav-bar .category-trigger[data-state="open"] {
+  background: #505052 !important;
+}
+
+.category-nav-bar .category-trigger,
+.category-nav-bar .category-trigger:hover,
+.category-nav-bar .category-trigger:focus,
+.category-nav-bar .category-trigger[data-state="open"] {
+  color: #fff !important;
+}
+
+.category-nav-bar .category-trigger svg {
+  color: currentColor;
+}
+
+.category-nav-bar .navigation-menu-viewport {
+  margin-top: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background: #fbfaf7;
+    color: #101b2d;
+    min-height: 100vh;
+  }
+  ::selection {
+    background: #c8a85b;
+    color: #101b2d;
+  }
+}
+
+@layer components {
+  .atelier-shell { @apply max-w-frame mx-auto px-4 xl:px-0; }
+  .eyebrow { @apply text-[11px] uppercase tracking-[0.22em] font-bold; color: #9b762d; }
+  .atelier-title { @apply font-bold tracking-[-0.035em]; color: #101b2d; }
+}
