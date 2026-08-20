@@ -102,7 +102,9 @@ const ProductCard = ({ data, showSocial = true }: ProductCardProps) => {
           )
         )}
       </div>
-      <p className="text-[11px] text-[#8a8a8a] leading-relaxed line-clamp-2 mt-1">{data.description}</p>
+      <p className="mt-1 min-h-[36px] text-[11px] leading-relaxed text-[#8a8a8a] line-clamp-2">
+        {data.description}
+      </p>
       {showSocial && <div className="product-social-bar flex w-full h-[30px] mt-3 text-[10px] text-white bg-[#cfcfcf]">
         <span className="flex-1 min-w-0 px-1 flex items-center justify-center gap-1 border-r border-white/70 whitespace-nowrap">♡ Favourite</span>
         <span className="flex-1 min-w-0 px-1 flex items-center justify-center gap-1 border-r border-white/70 whitespace-nowrap"><b>f</b> Facebook</span>
