@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import SidePromoSlider from "../SidePromoSlider";
+import { sectionPromos } from "@/data/section-promos";
 
 const collectionSlides = [
   { position: "50% 50%", eyebrow: "NEW COLLECTION", title: <>PRECIOUS<br/>EVERY DAY</> },
@@ -29,7 +30,7 @@ export default function Header() {
   return <div className="relative grid lg:grid-cols-[240px_1fr_240px] gap-0 pt-20 pb-10">
     <span aria-hidden className="hero-divider hidden lg:block absolute left-[240px] top-[50px] bottom-0 w-px bg-[#e3e3e3]" />
     <span aria-hidden className="hero-divider hidden lg:block absolute right-[240px] top-[50px] bottom-0 w-px bg-[#e3e3e3]" />
-    <div className="hidden lg:block"><SidePromoSlider label="GOLD COLLECTION" copy="Modern pieces for every day" position="12% center" height={345} sliding/></div>
+    <div className="hidden lg:block"><SidePromoSlider slides={sectionPromos.goldCollection.slides} height={345}/></div>
     <div className="group relative h-[260px] mx-5 overflow-hidden bg-[#111]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <Image key={slide} src="/images/atelier/jewelry-collection.png" fill priority alt="New jewelry collection" className="object-cover opacity-90 animate-in fade-in duration-500" style={{objectPosition:activeSlide.position}} />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
