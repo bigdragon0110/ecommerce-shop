@@ -16,9 +16,12 @@ import { useAppDispatch } from "@/lib/hooks/redux";
 
 type ProductCardProps = {
   data: CartItem;
+  onAdd?: () => void;
+  onRemove?: () => void;
+  onDelete?: () => void;
 };
 
-const ProductCard = ({ data }: ProductCardProps) => {
+const ProductCard = ({ data, onAdd, onRemove, onDelete }: ProductCardProps) => {
   const dispatch = useAppDispatch();
 
   return (
@@ -49,7 +52,7 @@ const ProductCard = ({ data }: ProductCardProps) => {
             size="icon"
             className="h-5 w-5 md:h-9 md:w-9"
             onClick={() =>
-              dispatch(
+              onDelete ? onDelete() : dispatch(
                 remove({
                   id: data.id,
                   attributes: data.attributes,
@@ -114,9 +117,9 @@ const ProductCard = ({ data }: ProductCardProps) => {
           </div>
           <CartCounter
             initialValue={data.quantity}
-            onAdd={() => dispatch(addToCart({ ...data, quantity: 1 }))}
+            onAdd={() => onAdd ? onAdd() : dispatch(addToCart({ ...data, quantity: 1 }))}
             onRemove={() =>
-              data.quantity === 1
+              onRemove ? onRemove() : data.quantity === 1
                 ? dispatch(
                     remove({
                       id: data.id,

@@ -1,5 +1,5 @@
 import type { Product } from "@/types/product.types";
-import type { ProductRepository, ProductSection } from "./product-repository";
+import type { CategoryNode, Pagination, ProductListing, ProductRepository, ProductSection, ProductSort } from "./product-repository";
 
 type ApiImage = {
   url: string;
@@ -21,10 +21,10 @@ type ApiProduct = {
   images?: ApiImage[];
 };
 
-const apiUrl = (process.env.ECOMMERCE_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api")
+const apiUrl = (process.env.ECOMMERCE_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100/api")
   .replace(/\/$/, "");
 
-const toProduct = (item: ApiProduct): Product => {
+export const toProduct = (item: ApiProduct): Product => {
   const images = [...(item.images || [])].sort(
     (left, right) => Number(right.isPrimary) - Number(left.isPrimary) || left.sortOrder - right.sortOrder,
   );
@@ -67,3 +67,33 @@ export const apiProductRepository: ProductRepository = {
     return data.products.map(toProduct);
   },
 };
+
+type ListingOptions = { page?: number; pageSize?: number; sort?: ProductSort };
+const listingQuery = ({ page = 1, pageSize = 12, sort = "newest" }: ListingOptions) =>
+  new URLSearchParams({ page: String(page), pageSize: String(pageSize), sort }).toString();
+
+export async function getApiCategoryTree(): Promise<CategoryNode[]> {
+  const data = await getJson<{ categories: CategoryNode[] }>("/categories/tree");
+  return data.categories;
+}
+
+export async function getApiCategoryListing(slug: string, options: ListingOptions = {}): Promise<ProductListing | null> {
+  const response = await fetch(`${apiUrl}/categories/${encodeURIComponent(slug)}/products?${listingQuery(options)}`, { cache: "no-store" });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Ecommerce API returned ${response.status} for category ${slug}`);
+  const data = await response.json() as {
+    category: { name: string; slug: string };
+    breadcrumbs: Array<{ name: string; slug: string }>;
+    products: ApiProduct[];
+    pagination: Pagination;
+  };
+  return { title: data.category.name, slug: data.category.slug, breadcrumbs: data.breadcrumbs, products: data.products.map(toProduct), pagination: data.pagination };
+}
+
+export async function getApiCollectionListing(slug: ProductSection, options: ListingOptions = {}): Promise<ProductListing | null> {
+  const response = await fetch(`${apiUrl}/collections/${slug}/products?${listingQuery(options)}`, { cache: "no-store" });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Ecommerce API returned ${response.status} for collection ${slug}`);
+  const data = await response.json() as { collection: { name: string; slug: string }; products: ApiProduct[]; pagination: Pagination };
+  return { title: data.collection.name, slug, breadcrumbs: [], products: data.products.map(toProduct), pagination: data.pagination };
+}

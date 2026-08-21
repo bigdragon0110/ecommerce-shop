@@ -22,6 +22,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+export const dynamic = "force-dynamic";
+
 export default async function ShopPage() {
   const [newArrivalsData, relatedProductData, topSellingData] = await Promise.all([
     getProductsBySection("new"),

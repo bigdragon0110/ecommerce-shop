@@ -7,6 +7,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { uiLabels } from "@/data/ui-labels";
 
+export const dynamic = "force-dynamic";
+
 function DetailImage({ product, position, height = "h-[520px]" }: { product: Product; position: string; height?: string }) {
   return <div className={`overflow-hidden ${height}`}><SafeProductImage src={product.srcUrl} alt={product.title} className="h-full w-full object-cover" style={{ objectPosition: position }}/></div>;
 }

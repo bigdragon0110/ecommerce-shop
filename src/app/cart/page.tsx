@@ -9,20 +9,47 @@ import { integralCF } from "@/styles/fonts";
 import { FaArrowRight } from "react-icons/fa6";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { TbBasketExclamation } from "react-icons/tb";
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RootState } from "@/lib/store";
 import { useAppSelector } from "@/lib/hooks/redux";
 import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { BackendCart, shopApi } from "@/lib/api/client";
+import type { CartItem } from "@/lib/features/carts/cartsSlice";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector(
     (state: RootState) => state.carts
   );
+  const { user, loading: authLoading, refreshCounts } = useAuth();
+  const router = useRouter();
+  const [remoteCart, setRemoteCart] = useState<BackendCart | null>(null);
+  const [remoteError, setRemoteError] = useState("");
+  const loadRemote = useCallback(async () => {
+    try { const data = await shopApi<{ cart: BackendCart }>("cart"); setRemoteCart(data.cart); setRemoteError(""); }
+    catch (value) { setRemoteError(value instanceof Error ? value.message : "Unable to load cart."); }
+  }, []);
+  useEffect(() => { if (user) void loadRemote(); else setRemoteCart(null); }, [user, loadRemote]);
+  const remoteItems = useMemo<CartItem[]>(() => remoteCart?.items.map((item) => ({
+    cartItemId:item.id,variantId:item.variantId,id:item.productId,name:item.title,
+    srcUrl:item.imageUrl||"/images/atelier/jewelry-collection.png",price:Number(item.unitPriceYen)/1000,
+    attributes:[item.sku,""],discount:{amount:0,percentage:0},quantity:Number(item.quantity),
+  })) || [], [remoteCart]);
+  const displayItems = user ? remoteItems : (cart?.items || []);
+  const displayTotal = user ? Number(remoteCart?.subtotalYen || 0) / 1000 : totalPrice;
+  const displayAdjusted = user ? displayTotal : adjustedTotalPrice;
+  const updateRemote = async (item: CartItem, quantity: number) => {
+    if (!item.cartItemId) return;
+    if (quantity < 1) await shopApi(`cart/items/${item.cartItemId}`, { method:"DELETE" });
+    else await shopApi(`cart/items/${item.cartItemId}`, { method:"PATCH", body:JSON.stringify({ quantity }) });
+    await Promise.all([loadRemote(), refreshCounts()]);
+  };
 
   return (
     <main className="pb-20">
       <div className="max-w-frame mx-auto px-4 xl:px-0">
-        {cart && cart.items.length > 0 ? (
+        {!authLoading && displayItems.length > 0 ? (
           <>
             <BreadcrumbCart />
             <h2
@@ -35,9 +62,9 @@ export default function CartPage() {
             </h2>
             <div className="flex flex-col lg:flex-row space-y-5 lg:space-y-0 lg:space-x-5 items-start">
               <div className="w-full p-3.5 md:px-6 flex-col space-y-4 md:space-y-6 rounded-[20px] border border-black/10">
-                {cart?.items.map((product, idx, arr) => (
-                  <React.Fragment key={idx}>
-                    <ProductCard data={product} />
+                {displayItems.map((product, idx, arr) => (
+                  <React.Fragment key={product.cartItemId || `${product.id}-${idx}`}>
+                    <ProductCard data={product} onAdd={user ? () => void updateRemote(product, product.quantity + 1) : undefined} onRemove={user ? () => void updateRemote(product, product.quantity - 1) : undefined} onDelete={user ? () => void updateRemote(product, 0) : undefined} />
                     {arr.length - 1 !== idx && (
                       <hr className="border-t-black/10" />
                     )}
@@ -51,18 +78,18 @@ export default function CartPage() {
                 <div className="flex flex-col space-y-5">
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black/60">Subtotal</span>
-                    <span className="md:text-xl font-bold">${totalPrice}</span>
+                    <span className="md:text-xl font-bold">₩ {Math.round(displayTotal * 1000).toLocaleString()}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black/60">
                       Discount (-
                       {Math.round(
-                        ((totalPrice - adjustedTotalPrice) / totalPrice) * 100
+                        displayTotal ? ((displayTotal - displayAdjusted) / displayTotal) * 100 : 0
                       )}
                       %)
                     </span>
                     <span className="md:text-xl font-bold text-red-600">
-                      -${Math.round(totalPrice - adjustedTotalPrice)}
+                      -₩ {Math.round((displayTotal - displayAdjusted) * 1000).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -75,7 +102,7 @@ export default function CartPage() {
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black">Total</span>
                     <span className="text-xl md:text-2xl font-bold">
-                      ${Math.round(adjustedTotalPrice)}
+                      ₩ {Math.round(displayAdjusted * 1000).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -100,9 +127,10 @@ export default function CartPage() {
                 </div>
                 <Button
                   type="button"
+                  onClick={() => user ? router.push("/checkout") : router.push("/")}
                   className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
                 >
-                  Go to Checkout{" "}
+                  {user ? "Go to Checkout" : "Login before checkout"}{" "}
                   <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />
                 </Button>
               </div>
@@ -110,6 +138,7 @@ export default function CartPage() {
           </>
         ) : (
           <div className="mt-12 md:mt-20">
+            {remoteError && <p className="mb-4 text-center text-red-600">{remoteError}</p>}
             <div className="grid grid-cols-4 max-w-4xl mx-auto mb-16">
               {["Selection","Bag","Payment","Complete"].map((step,index)=><div key={step} className="relative text-center"><div className={`relative z-10 mx-auto w-12 h-12 rounded-full border-2 flex items-center justify-center font-bold ${index===1 ? "bg-[#101b2d] border-[#101b2d] text-white" : "bg-[#fbfaf7] border-[#b9b7b0] text-[#7b7c7d]"}`}>{index+1}</div><span className="text-xs sm:text-sm mt-3 block font-bold">{step}</span>{index<3 && <span className="absolute top-6 left-1/2 w-full h-px bg-[#d8d0c2]" />}</div>)}
             </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 import { NavMenu } from "../navbar.types";
@@ -14,6 +16,9 @@ import { Heart, ShoppingBag, ShoppingBasket } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 import LoginPopover from "../LoginPopover";
 import { uiLabels } from "@/data/ui-labels";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useAppSelector } from "@/lib/hooks/redux";
+import type { RootState } from "@/lib/store";
 
 const data: NavMenu = [
   {
@@ -51,30 +56,32 @@ const data: NavMenu = [
     id: 2,
     type: "MenuItem",
     label: "人気商品",
-    url: "/shop#on-sale",
+    url: "/shop/collection/hit",
     children: [],
   },
   {
     id: 3,
     type: "MenuItem",
     label: "おすすめの商品",
-    url: "/shop#new-arrivals",
+    url: "/shop/collection/recommended",
     children: [],
   },
   {
     id: 4,
     type: "MenuItem",
     label: "新着商品",
-    url: "/shop#brands",
+    url: "/shop/collection/new",
     children: [],
   },
-  { id: 5, type: "MenuItem", label: "人気商品", url: "/shop#popular", children: [] },
-  { id: 6, type: "MenuItem", label: "割引商品", url: "/shop#sale", children: [] },
+  { id: 5, type: "MenuItem", label: "人気商品", url: "/shop/collection/popular", children: [] },
+  { id: 6, type: "MenuItem", label: "割引商品", url: "/shop/collection/sale", children: [] },
 ];
 
 const TopNavbar = () => {
+  const { user, cartCount, wishlistCount } = useAuth();
+  const guestCount = useAppSelector((state: RootState) => state.carts.cart?.totalQuantities || 0);
   return (
-    <nav className="sticky top-0 bg-[#1d293d] z-20 text-white shadow-sm">
+    <nav className="sticky top-0 isolate z-[100] bg-[#1d293d] text-white shadow-sm">
       <div className="flex relative max-w-frame mx-auto items-center justify-between md:justify-start py-5 px-2 sm:px-4 xl:px-0">
         <div className="flex items-center">
           <div className="block md:hidden mr-3 shrink-0">
@@ -127,11 +134,11 @@ const TopNavbar = () => {
           </Link>
           <LoginPopover />
           <Link href="/wishlist" className="group relative min-w-9 sm:min-w-12 flex flex-col items-center gap-1 p-0 sm:p-1 text-[#8d8f91] hover:text-white" aria-label="View favourites">
-            <span className="relative w-8 h-8 flex items-center justify-center"><ShoppingBag size={29} strokeWidth={1.7}/><Heart size={11} strokeWidth={2} className="absolute top-[11px]"/><b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#777] text-white text-[10px] leading-5 text-center">0</b></span>
+            <span className="relative w-8 h-8 flex items-center justify-center"><ShoppingBag size={29} strokeWidth={1.7} /><Heart size={11} strokeWidth={2} className="absolute top-[11px]" /><b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#777] text-white text-[10px] leading-5 text-center">{user ? wishlistCount : 0}</b></span>
             <span className="hidden sm:block text-[10px] font-bold text-white">{uiLabels.favourite}</span>
           </Link>
           <Link href="/cart" className="group relative min-w-9 sm:min-w-12 flex flex-col items-center gap-1 p-0 sm:p-1 text-[#8d8f91] hover:text-white" aria-label="View checkout cart">
-            <span className="relative w-8 h-8 flex items-center justify-center"><ShoppingBasket size={31} strokeWidth={1.7}/><b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#777] text-white text-[10px] leading-5 text-center">0</b></span>
+            <span className="relative w-8 h-8 flex items-center justify-center"><ShoppingBasket size={31} strokeWidth={1.7} /><b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#777] text-white text-[10px] leading-5 text-center">{user ? cartCount : guestCount}</b></span>
             <span className="hidden sm:block text-[10px] font-bold text-white">{uiLabels.cart}</span>
           </Link>
         </div>

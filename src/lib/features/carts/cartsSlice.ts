@@ -23,6 +23,8 @@ export type RemoveCartItem = {
 };
 
 export type CartItem = {
+  cartItemId?: number;
+  variantId?: number | null;
   id: number;
   name: string;
   srcUrl: string;
@@ -58,6 +60,7 @@ export const cartsSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    clearCart: () => initialState,
     addToCart: (state, action: PayloadAction<CartItem>) => {
       // if cart is empty then add
       if (state.cart === null) {
@@ -197,6 +200,6 @@ export const cartsSlice = createSlice({
   },
 });
 
-export const { addToCart, removeCartItem, remove } = cartsSlice.actions;
+export const { addToCart, removeCartItem, remove, clearCart } = cartsSlice.actions;
 
 export default cartsSlice.reducer;
