@@ -22,8 +22,9 @@ const ProductListSec = ({ title, data, viewAllLink, controlLink, showSocial = tr
   const [activeSlide, setActiveSlide] = useState(0);
   const localizedTitle = sectionLabels[title.toLowerCase()];
   const productsPerSlide = 4;
-  const slideCount = showSlideIndicators ? Math.max(1, data.length) : Math.max(1, Math.ceil(data.length / productsPerSlide));
-  const visibleProducts = showSlideIndicators && data.length
+  const isCarousel = showSlideIndicators || sectionControls === "arrows-plus";
+  const slideCount = isCarousel ? Math.max(1, data.length) : 1;
+  const visibleProducts = isCarousel && data.length
     ? Array.from({ length: Math.min(productsPerSlide, data.length) }, (_, offset) => data[(activeSlide + offset) % data.length])
     : data;
   const moveSlide = (direction: -1 | 1) => setActiveSlide((value) => (value + direction + slideCount) % slideCount);
