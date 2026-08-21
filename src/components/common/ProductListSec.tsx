@@ -12,14 +12,14 @@ type ProductListSecProps = {
   title: string;
   data: Product[];
   viewAllLink?: string;
+  controlLink?: string;
   showSocial?: boolean;
   showSlideIndicators?: boolean;
   sectionControls?: "plus" | "arrows-plus";
 };
 
-const ProductListSec = ({ title, data, viewAllLink, showSocial = true, showSlideIndicators = false, sectionControls }: ProductListSecProps) => {
+const ProductListSec = ({ title, data, viewAllLink, controlLink, showSocial = true, showSlideIndicators = false, sectionControls }: ProductListSecProps) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [sectionHovered, setSectionHovered] = useState(false);
   const localizedTitle = sectionLabels[title.toLowerCase()];
   const productsPerSlide = 4;
   const slideCount = showSlideIndicators ? Math.max(1, data.length) : Math.max(1, Math.ceil(data.length / productsPerSlide));
@@ -32,7 +32,7 @@ const ProductListSec = ({ title, data, viewAllLink, showSocial = true, showSlide
     if (activeSlide >= slideCount) setActiveSlide(Math.max(0, slideCount - 1));
   }, [activeSlide, slideCount]);
   return (
-    <section className="atelier-shell" onMouseEnter={() => setSectionHovered(true)} onMouseLeave={() => setSectionHovered(false)}>
+    <section className="atelier-shell">
       <div className="relative flex items-end justify-between mb-8 md:mb-11 border-b border-[#e9e9e9] pb-4">
         <div><h2 className="font-bold text-[22px] md:text-2xl text-[#111]">{localizedTitle ? <><span>{localizedTitle.primary}</span><span className="ml-1 text-[#9a9a9a]">{localizedTitle.secondary}</span></> : title}</h2>{localizedTitle && <span aria-hidden className="absolute -bottom-px left-0 flex gap-1"><i className="block h-px w-10 bg-[#222]"/><i className="block h-px w-5 bg-[#222]"/></span>}</div>
         {viewAllLink && (
@@ -40,17 +40,13 @@ const ProductListSec = ({ title, data, viewAllLink, showSocial = true, showSlide
         )}
         {sectionControls && <div className="flex items-center gap-1.5 ml-auto">
           {sectionControls === "arrows-plus" && <>
-            <button type="button" onClick={() => moveSlide(-1)} aria-label="Previous product slide" className={`section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a] transition-opacity duration-150 focus-visible:opacity-100 ${sectionHovered ? "opacity-100" : "opacity-0"}`}><ChevronLeft size={18} strokeWidth={2.5} className="block" /></button>
-            <button type="button" onClick={() => moveSlide(1)} aria-label="Next product slide" className={`section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a] transition-opacity duration-150 focus-visible:opacity-100 ${sectionHovered ? "opacity-100" : "opacity-0"}`}><ChevronRight size={18} strokeWidth={2.5} className="block" /></button>
+            <button type="button" onClick={() => moveSlide(-1)} aria-label="Previous product slide" className="section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a]"><ChevronLeft size={18} strokeWidth={2.5} className="block" /></button>
+            <button type="button" onClick={() => moveSlide(1)} aria-label="Next product slide" className="section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a]"><ChevronRight size={18} strokeWidth={2.5} className="block" /></button>
           </>}
-          <Link href="/shop" aria-label={`View all ${title}`} className="section-control w-8 h-8 border border-[#222] bg-white text-[#111] flex items-center justify-center"><Plus size={20} strokeWidth={2.5} /></Link>
+          <Link href={controlLink || viewAllLink || "/shop"} aria-label={`View all ${title}`} className="section-control w-8 h-8 border border-[#222] bg-white text-[#111] flex items-center justify-center"><Plus size={20} strokeWidth={2.5} /></Link>
         </div>}
       </div>
       <div className="relative">
-        {showSlideIndicators && slideCount > 1 && <>
-          <button type="button" onClick={() => moveSlide(-1)} aria-label="Previous product slide" className={`absolute -left-1 top-[42%] z-10 grid h-[34px] w-[34px] -translate-y-1/2 place-items-center rounded-[2px] bg-[#777]/85 text-white transition-[opacity,background-color] duration-150 hover:bg-[#5f5f5f] focus-visible:opacity-100 md:-left-2 ${sectionHovered ? "opacity-100" : "opacity-0"}`}><ChevronLeft size={21} /></button>
-          <button type="button" onClick={() => moveSlide(1)} aria-label="Next product slide" className={`absolute -right-1 top-[42%] z-10 grid h-[34px] w-[34px] -translate-y-1/2 place-items-center rounded-[2px] bg-[#777]/85 text-white transition-[opacity,background-color] duration-150 hover:bg-[#5f5f5f] focus-visible:opacity-100 md:-right-2 ${sectionHovered ? "opacity-100" : "opacity-0"}`}><ChevronRight size={21} /></button>
-        </>}
         <div key={activeSlide} className="grid grid-cols-2 gap-x-4 gap-y-10 animate-in fade-in duration-200 lg:grid-cols-4 md:gap-x-6">
           {visibleProducts.map((product) => <ProductCard key={product.id} data={product} showSocial={showSocial} />)}
         </div>
