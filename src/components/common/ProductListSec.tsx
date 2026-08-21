@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import { Product } from "@/types/product.types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { sectionLabels } from "@/data/ui-labels";
 
 type ProductListSecProps = {
@@ -18,7 +18,7 @@ type ProductListSecProps = {
   sectionControls?: "plus" | "arrows-plus";
 };
 
-const ProductListSec = ({ title, data, viewAllLink, controlLink, showSocial = true, showSlideIndicators = false, sectionControls }: ProductListSecProps) => {
+const ProductListSec = ({ title, data, viewAllLink, showSocial = true, showSlideIndicators = false, sectionControls }: ProductListSecProps) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const localizedTitle = sectionLabels[title.toLowerCase()];
   const productsPerSlide = 4;
@@ -39,12 +39,11 @@ const ProductListSec = ({ title, data, viewAllLink, controlLink, showSocial = tr
         {viewAllLink && (
           <Link href={viewAllLink} className="hidden sm:inline-block border-b border-[#101b2d] pb-1 font-bold text-sm">View all pieces</Link>
         )}
-        {sectionControls && <div className="flex items-center gap-1.5 ml-auto">
-          {sectionControls === "arrows-plus" && <>
+        {sectionControls === "arrows-plus" && <div className="flex items-center gap-1.5 ml-auto">
+          <>
             <button type="button" onClick={() => moveSlide(-1)} aria-label="Previous product slide" className="section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a]"><ChevronLeft size={18} strokeWidth={2.5} className="block" /></button>
             <button type="button" onClick={() => moveSlide(1)} aria-label="Next product slide" className="section-control inline-flex h-8 w-8 items-center justify-center border border-[#bfc3c7] bg-white p-0 text-[#59616a]"><ChevronRight size={18} strokeWidth={2.5} className="block" /></button>
-          </>}
-          <Link href={controlLink || viewAllLink || "/shop"} aria-label={`View all ${title}`} className="section-control w-8 h-8 border border-[#222] bg-white text-[#111] flex items-center justify-center"><Plus size={20} strokeWidth={2.5} /></Link>
+          </>
         </div>}
       </div>
       <div className="relative">

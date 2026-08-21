@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import SidePromoSlider from "../SidePromoSlider";
@@ -34,7 +33,7 @@ export default function Header() {
     <div className="group relative h-[260px] mx-5 overflow-hidden bg-[#111]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <Image key={slide} src="/images/atelier/jewelry-collection.png" fill priority alt="New jewelry collection" className="object-cover opacity-90 animate-in fade-in duration-500" style={{objectPosition:activeSlide.position}} />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent" />
-      <div className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 text-white"><span className="text-xs tracking-[.25em]">{activeSlide.eyebrow}</span><h1 className="text-3xl md:text-5xl font-bold mt-3">{activeSlide.title}</h1><Link href="/shop" className="inline-block mt-5 bg-[#08a9c7] rounded-full px-6 py-2 text-xs font-bold">SHOP NOW ›</Link></div>
+      <div className="absolute left-8 md:left-16 top-1/2 -translate-y-1/2 text-white"><span className="text-xs tracking-[.25em]">{activeSlide.eyebrow}</span><h1 className="text-3xl md:text-5xl font-bold mt-3">{activeSlide.title}</h1></div>
       <div className="absolute right-2.5 top-2.5 z-10 flex gap-[2px] opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
         <button type="button" onClick={() => changeSlide(-1)} aria-label="Previous collection slide" className="grid h-8 w-8 place-items-center rounded-[3px] bg-[#6f7072] text-white hover:bg-[#555658]"><ChevronLeft size={20}/></button>
         <button type="button" onClick={() => changeSlide(1)} aria-label="Next collection slide" className="grid h-8 w-8 place-items-center rounded-[3px] bg-[#6f7072] text-white hover:bg-[#555658]"><ChevronRight size={20}/></button>
