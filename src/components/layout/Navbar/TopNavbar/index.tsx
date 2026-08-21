@@ -15,6 +15,7 @@ import ResTopNavbar from "./ResTopNavbar";
 import { Heart, ShoppingBag, ShoppingBasket } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 import LoginPopover from "../LoginPopover";
+import NotificationPopover from "../NotificationPopover";
 import { uiLabels } from "@/data/ui-labels";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAppSelector } from "@/lib/hooks/redux";
@@ -133,6 +134,7 @@ const TopNavbar = () => {
             />
           </Link>
           <LoginPopover />
+          <NotificationPopover />
           <Link href="/wishlist" className="group relative min-w-9 sm:min-w-12 flex flex-col items-center gap-1 p-0 sm:p-1 text-[#8d8f91] hover:text-white" aria-label="View favourites">
             <span className="relative w-8 h-8 flex items-center justify-center"><ShoppingBag size={29} strokeWidth={1.7} /><Heart size={11} strokeWidth={2} className="absolute top-[11px]" /><b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#777] text-white text-[10px] leading-5 text-center">{user ? wishlistCount : 0}</b></span>
             <span className="hidden sm:block text-[10px] font-bold text-white">{uiLabels.favourite}</span>

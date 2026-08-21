@@ -1,12 +1,18 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { uiLabels } from "@/data/ui-labels";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const TopBanner = () => {
+  const { user, loading } = useAuth();
   return (
     <div className="top-utility-bar relative z-50 bg-[#173b52] text-white h-[38px] px-4 text-xs">
       <div className="max-w-frame mx-auto h-full flex items-center justify-end gap-5">
-        <a href="#register">{uiLabels.memberRegistration}</a>
+        {!loading && !user && (
+          <Link href="/register">{uiLabels.memberRegistration}</Link>
+        )}
         <div className="group relative flex h-full items-center">
           <button type="button" className="flex h-full items-center gap-1 text-inherit hover:text-white focus:outline-none" aria-haspopup="menu">
             {uiLabels.additionalMenu} <span className="text-[9px]">▼</span>

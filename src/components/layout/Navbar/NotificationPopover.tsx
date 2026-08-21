@@ -1,0 +1,20 @@
+"use client";
+import Link from "next/link";
+import {useEffect,useRef,useState} from "react";
+import {Bell,CheckCheck,Info,Trash2} from "lucide-react";
+import {shopApi} from "@/lib/api/client";
+import {useAuth} from "@/components/auth/AuthProvider";
+type Notice={id:number;title:string;message:string;type:"INFO"|"SUCCESS"|"WARNING"|"PROMOTION";linkUrl?:string|null;isRead:boolean;createdAt:string};
+export default function NotificationPopover(){
+ const{user}=useAuth();const[open,setOpen]=useState(false),[items,setItems]=useState<Notice[]>([]),[unread,setUnread]=useState(0);const root=useRef<HTMLDivElement>(null);
+ const load=async()=>{if(!user)return;try{const data=await shopApi<{notifications:Notice[];unreadCount:number}>("account/notifications?limit=30");setItems(data.notifications);setUnread(Number(data.unreadCount));}catch{/* Header remains usable if notifications are unavailable. */}};
+ useEffect(()=>{if(!user){setItems([]);setUnread(0);return;}void load();const timer=setInterval(()=>void load(),45000);return()=>clearInterval(timer);},[user?.id]);
+ useEffect(()=>{const close=(e:MouseEvent)=>{if(root.current&&!root.current.contains(e.target as Node))setOpen(false);};document.addEventListener("mousedown",close);return()=>document.removeEventListener("mousedown",close);},[]);
+ if(!user)return null;
+ const read=async(id:number)=>{const item=items.find(n=>n.id===id);if(item?.isRead)return;setItems(v=>v.map(n=>n.id===id?{...n,isRead:true}:n));setUnread(v=>Math.max(0,v-1));try{await shopApi(`account/notifications/${id}/read`,{method:"PATCH"});}catch{void load();}};
+ const readAll=async()=>{setItems(v=>v.map(n=>({...n,isRead:true})));setUnread(0);try{await shopApi("account/notifications/read-all",{method:"PATCH"});}catch{void load();}};
+ const hide=async(id:number)=>{const wasUnread=!items.find(n=>n.id===id)?.isRead;setItems(v=>v.filter(n=>n.id!==id));if(wasUnread)setUnread(v=>Math.max(0,v-1));try{await shopApi(`account/notifications/${id}`,{method:"DELETE"});}catch{void load();}};
+ return <div ref={root} className="relative"><button type="button" onClick={()=>setOpen(v=>!v)} className="group relative min-w-9 sm:min-w-12 flex flex-col items-center gap-1 p-0 sm:p-1 text-[#8d8f91] hover:text-white" aria-label={`${unread} unread notifications`} aria-expanded={open}><span className="relative flex h-8 w-8 items-center justify-center"><Bell size={28} strokeWidth={1.7}/>{unread>0&&<b className="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-md bg-[#c40000] text-white text-[10px] leading-5 text-center">{unread>99?"99+":unread}</b>}</span><span className="hidden sm:block text-[10px] font-bold text-white">お知らせ</span></button>
+ {open&&<div className="absolute right-0 top-[48px] z-[220] w-[min(92vw,380px)] overflow-hidden border border-[#3d4654] bg-white text-[#20242a] shadow-xl dark:bg-[#151b23] dark:text-[#d7dbe0]"><div className="flex items-center justify-between border-b px-4 py-3 dark:border-[#343b45]"><strong>お知らせ</strong>{unread>0&&<button onClick={()=>void readAll()} className="flex items-center gap-1 text-xs text-[#315d82] hover:underline dark:text-[#9eb8d1]"><CheckCheck size={14}/>すべて既読</button>}</div><div className="max-h-[420px] overflow-y-auto">{items.length===0?<div className="p-8 text-center text-sm text-gray-500">新しいお知らせはありません。</div>:items.map(n=><article key={n.id} className={`group/item relative border-b px-4 py-3 pr-10 dark:border-[#2c333d] ${n.isRead?"opacity-65":"bg-[#f2f7fb] dark:bg-[#1b2835]"}`}><Link href={n.linkUrl||"#"} onClick={()=>{void read(n.id);if(n.linkUrl)setOpen(false);}} className="block"><div className="flex items-start gap-2"><Info size={16} className="mt-0.5 shrink-0 text-[#315d82]"/><div><h3 className="text-sm font-semibold">{n.title}</h3><p className="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-300">{n.message}</p><time className="mt-1 block text-[10px] text-gray-400">{new Date(n.createdAt).toLocaleString()}</time></div></div></Link><button onClick={()=>void hide(n.id)} className="absolute right-2 top-3 p-1 text-gray-400 hover:text-red-600" aria-label="Hide notification"><Trash2 size={14}/></button></article>)}</div></div>}
+ </div>;
+}
